@@ -16,6 +16,8 @@ import android.widget.SeekBar;
 public class MediaControlPanel extends FrameLayout{
     Handler mHandler;//接收后台事件响应结果，相应改变界面
     Button mPlayPauseButton;//播放&暂停按钮
+    Button mNextButton;//下一个按钮
+    Button mPrevButton;//上一个按钮
     SeekBar mSeekBar;//播放进度条
     Context mContext;
     View mPanelView;//
