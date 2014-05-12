@@ -2,25 +2,32 @@ package com.rmj.mediaplayer.controller;
 
 import android.content.Context;
 import android.os.Handler;
+import android.os.Message;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.SeekBar;
+import com.rmj.mediaplayer.constant.PlayerOperation;
 
 /**
  * 界面部分只提供功能，界面布局、显示效果都由layout文件控制，重写initControllerView()方法自行定制
  * Created by G11 on 2014/5/6.
  */
-public class MediaControlPanel extends FrameLayout{
+public abstract class MediaControlPanel extends FrameLayout{
     Handler mHandler;//接收后台事件响应结果，相应改变界面
-    Button mPlayPauseButton;//播放&暂停按钮
-    Button mNextButton;//下一个按钮
-    Button mPrevButton;//上一个按钮
+    ImageButton mPlayPauseButton;//播放&暂停按钮
+    ImageButton mNextButton;//下一个按钮
+    ImageButton mPrevButton;//上一个按钮
     SeekBar mSeekBar;//播放进度条
     Context mContext;
-    View mPanelView;//
+    View mPanelView;
+    MediaPlayerControl mPlayerControl;
+
+    OnClickListener mPlayPauseListener;
+    SeekBar.OnSeekBarChangeListener mSeekBarChangeListener;
 
     public MediaControlPanel(Context context) {
         super(context);
@@ -51,17 +58,64 @@ public class MediaControlPanel extends FrameLayout{
     /**
      * 初始化接收事件响应的handler
      */
-    public void initHandler(){}
+    public void initHandler(){
+        mHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case PlayerOperation.STATUS_PLAYED:
+                        break;
+                    case PlayerOperation.STATUS_PAUSED:
+                        break;
+                    case PlayerOperation.STATUS_STOPED:
+                        break;
+                    case PlayerOperation.STATUS_PREPARED:
+                        break;
+                    default:
+                        break;
+
+                }
+            }
+        };
+    }
 
     /**
      * 初始化基础事件监听器
      */
-    public void initListeners(){}
+    public void initListeners(){
+        mPlayPauseListener = new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        };
+        mSeekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        };
+    }
 
     /**
      * 初始化用户自定义事件监听器
      */
-    public void initExtraListeners(){}
+    public abstract void initExtraListeners();
+    abstract void played();
+    abstract void paused();
+    abstract void stoped();
+    abstract void waiting();
+    abstract void prepared();
 
     /**
      * 显示控制界面
@@ -72,6 +126,10 @@ public class MediaControlPanel extends FrameLayout{
      * 隐藏控制界面
      */
     public void hide(){}
+
+    public void setPlayerControl(MediaPlayerControl control) {
+        mPlayerControl = control;
+    }
 
     /**
      * 控制执行接口，负责执行控制操作（区分开界面控制和后台控制逻辑）

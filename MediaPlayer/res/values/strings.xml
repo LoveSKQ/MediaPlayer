@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">MediaPlayer</string>
+    <string name="media_player_hotline">热线电话</string>
+    <string name="media_status_paused">暂停</string>
+    <string name="media_player_share">分享</string>
 </resources>
