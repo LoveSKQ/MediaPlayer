@@ -6,11 +6,13 @@
     <file url="file://$PROJECT_DIR$/MediaPlayer/res/drawable/audio_player_share.png" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/MediaPlayer/res/drawable/hotline.png" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/MediaPlayer/res/drawable/hotline_btn.xml" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/MediaPlayer/res/drawable/hotline_btn_normal.9.png" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/MediaPlayer/res/drawable/hotline_btn_pressed.9.png" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/MediaPlayer/res/drawable/seek_down.png" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/MediaPlayer/res/drawable/seek_up.png" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/MediaPlayer/res/drawable/seekbar_style.xml" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/MediaPlayer/src/com/rmj/mediaplayer/controller/MediaControlPanel.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/MediaPlayer/src/com/rmj/mediaplayer/log/Log.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/MediaPlayer/src/com/rmj/mediaplayer/core/controller/MediaControlPanel.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/MediaPlayer/src/com/rmj/mediaplayer/core/log/Log.java" charset="UTF-8" />
   </component>
 </project>
 

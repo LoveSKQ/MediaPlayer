@@ -1,4 +1,4 @@
-package com.rmj.mediaplayer.controller;
+package com.rmj.mediaplayer.core.controller;
 
 import android.content.Context;
 import android.os.Handler;
@@ -6,39 +6,47 @@ import android.os.Message;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
-import com.rmj.mediaplayer.constant.PlayerOperation;
+import android.widget.TextView;
+import com.rmj.mediaplayer.core.constant.PlayerOperation;
+import com.rmj.mediaplayer.core.service.MediaService;
+import com.rmj.mediaplayer.core.util.StringUtils;
+import org.w3c.dom.Text;
 
 /**
  * 界面部分只提供功能，界面布局、显示效果都由layout文件控制，重写initControllerView()方法自行定制
  * Created by G11 on 2014/5/6.
  */
 public abstract class MediaControlPanel extends FrameLayout{
-    Handler mHandler;//接收后台事件响应结果，相应改变界面
-    ImageButton mPlayPauseButton;//播放&暂停按钮
-    ImageButton mNextButton;//下一个按钮
-    ImageButton mPrevButton;//上一个按钮
-    SeekBar mSeekBar;//播放进度条
-    Context mContext;
-    View mPanelView;
-    MediaPlayerControl mPlayerControl;
+    protected Handler mHandler;//接收后台事件响应结果，相应改变界面
+    protected ImageButton mPlayPauseButton;//播放&暂停按钮
+    protected ImageButton mNextButton;//下一个按钮
+    protected ImageButton mPrevButton;//上一个按钮
+    protected SeekBar mSeekBar;//播放进度条
+    protected TextView mCurrentTime;
+    protected TextView mTotalTime;
+    protected Context mContext;
+    protected View mPanelView;
+    protected MediaPlayerControl mPlayerControl;
 
-    OnClickListener mPlayPauseListener;
-    SeekBar.OnSeekBarChangeListener mSeekBarChangeListener;
+    public OnClickListener mPlayPauseListener;
+    public SeekBar.OnSeekBarChangeListener mSeekBarChangeListener;
 
     public MediaControlPanel(Context context) {
         super(context);
+        mContext = context;
     }
 
     public MediaControlPanel(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mContext = context;
     }
 
     public MediaControlPanel(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        mContext = context;
     }
 
     /**
@@ -48,6 +56,7 @@ public abstract class MediaControlPanel extends FrameLayout{
     public void setPanelView(int layout) {
         //判断layout是否有效
         mPanelView = ((LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(layout,null);
+        this.addView(mPanelView);
     }
 
     /**
@@ -64,12 +73,27 @@ public abstract class MediaControlPanel extends FrameLayout{
             public void handleMessage(Message msg) {
                 switch (msg.what) {
                     case PlayerOperation.STATUS_PLAYED:
+                        played();
                         break;
                     case PlayerOperation.STATUS_PAUSED:
+                        paused();
                         break;
                     case PlayerOperation.STATUS_STOPED:
+                        stoped();
                         break;
                     case PlayerOperation.STATUS_PREPARED:
+                        prepared();
+                        break;
+                    case PlayerOperation.STATUS_BUFFERRING_START:
+                        bufferingStart();
+                        break;
+                    case PlayerOperation.STATUS_BUFFERRING_END:
+                        bufferingEnd();
+                        break;
+                    case PlayerOperation.STATUS_ERROR:
+                        error();
+                        break;
+                    case PlayerOperation.STATUS_IDLE:
                         break;
                     default:
                         break;
@@ -86,23 +110,28 @@ public abstract class MediaControlPanel extends FrameLayout{
         mPlayPauseListener = new OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Message _msg = MediaService.mHandler.obtainMessage(PlayerOperation.OPERATION_START);
+                _msg.sendToTarget();
+                waiting();
             }
         };
         mSeekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
+                if (!fromUser) {
+                    return;
+                }
+                //TODO 拖动播放进度操作
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
+                //TODO 开始拖动动作
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
+                //TODO 拖动结束
             }
         };
     }
@@ -111,11 +140,15 @@ public abstract class MediaControlPanel extends FrameLayout{
      * 初始化用户自定义事件监听器
      */
     public abstract void initExtraListeners();
-    abstract void played();
-    abstract void paused();
-    abstract void stoped();
-    abstract void waiting();
-    abstract void prepared();
+    protected abstract void played();
+    protected abstract void paused();
+    protected abstract void stoped();
+    protected abstract void waiting();
+    protected abstract void prepared();
+    protected abstract void bufferingStart();
+    protected abstract void bufferingEnd();
+    protected abstract void error();
+
 
     /**
      * 显示控制界面

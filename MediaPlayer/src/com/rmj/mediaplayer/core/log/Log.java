@@ -1,4 +1,4 @@
-package com.rmj.mediaplayer.log;
+package com.rmj.mediaplayer.core.log;
 
 /**
  * Created by G11 on 2014/4/16.

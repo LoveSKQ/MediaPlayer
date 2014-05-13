@@ -1,9 +1,9 @@
-package com.rmj.mediaplayer.controller;
+package com.rmj.mediaplayer.core.controller;
 
 import android.os.Message;
-import com.rmj.mediaplayer.constant.PlayerOperation;
-import com.rmj.mediaplayer.manager.MediaManager;
-import com.rmj.mediaplayer.service.MediaService;
+import com.rmj.mediaplayer.core.constant.PlayerOperation;
+import com.rmj.mediaplayer.core.manager.MediaManager;
+import com.rmj.mediaplayer.core.service.MediaService;
 
 /**
  * Created by G11 on 2014/5/12.
