@@ -23,6 +23,7 @@ public class MediaControlPanel extends com.rmj.mediaplayer.core.controller.Media
     public MediaControlPanel(Context context) {
         super(context);
         initPanelView();
+        //TODO
     }
 
     public MediaControlPanel(Context context, AttributeSet attrs) {
