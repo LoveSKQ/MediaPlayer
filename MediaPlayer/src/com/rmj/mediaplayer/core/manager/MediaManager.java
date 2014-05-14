@@ -1,5 +1,6 @@
 package com.rmj.mediaplayer.core.manager;
 
+import android.content.Context;
 import com.rmj.mediaplayer.core.bean.MediaInfo;
 import com.rmj.mediaplayer.core.constant.PlayerOperation;
 import com.rmj.mediaplayer.core.log.Log;
@@ -14,7 +15,9 @@ import java.io.IOException;
 public class MediaManager {
     private MediaPlayer mMediaPlayer;
     private MediaInfo mCurrentMediaInfo;
+    private Context mContext = null;
     private static MediaManager mInstance = new MediaManager();
+    private int mStatus = PlayerOperation.STATUS_IDLE;
 
     public static MediaManager getInstance() {
         return mInstance;
@@ -32,19 +35,20 @@ public class MediaManager {
         mMediaPlayer = null;
     }
 
-    public void initMediaPlayer(MediaPlayer mediaplayer) {
+    public void setContext(Context context) {
+        mContext = context;
+    }
+
+    public void initMediaPlayer() {
         if (mMediaPlayer == null) {
-            if (mediaplayer == null) {
-                mMediaPlayer = new MediaPlayer(null);
-            }
-            else
-                mMediaPlayer = mediaplayer;
+            mMediaPlayer = new MediaPlayer(mContext);
         }else {
             mMediaPlayer.reset();
         }
         mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
+                mStatus = PlayerOperation.STATUS_PREPARED;
                 MediaService.mHandler.obtainMessage(PlayerOperation.STATUS_PREPARED).sendToTarget();
             }
         });
@@ -59,11 +63,11 @@ public class MediaManager {
             public boolean onInfo(MediaPlayer mp, int what, int extra) {
                 if (what == MediaPlayer.MEDIA_INFO_BUFFERING_START) {
                     //开始缓冲执行的操作
-                    MediaService.mHandler.obtainMessage(PlayerOperation.STATUS_BUFFERRING_START).sendToTarget();
+                    MediaService.mHandler.obtainMessage(PlayerOperation.STATUS_BUFFERING_START).sendToTarget();
                 }
                 else if (what == MediaPlayer.MEDIA_INFO_BUFFERING_END) {
                     //缓冲结束后执行的操作
-                    MediaService.mHandler.obtainMessage(PlayerOperation.STATUS_BUFFERRING_END).sendToTarget();
+                    MediaService.mHandler.obtainMessage(PlayerOperation.STATUS_BUFFERING_END).sendToTarget();
                 }
                 return true;
             }
@@ -90,10 +94,12 @@ public class MediaManager {
         try {
             mMediaPlayer.reset();
             mMediaPlayer.setDataSource(mCurrentMediaInfo.getUrl());
+            mMediaPlayer.setBufferSize(512);
             mMediaPlayer.prepareAsync();
             _result = true;
         } catch (IOException e) {
             Log.e("MediaManager",e.toString());
+            mStatus = PlayerOperation.STATUS_ERROR;
         }
         return _result;
     }
@@ -103,6 +109,7 @@ public class MediaManager {
      */
     public void start() {
         mMediaPlayer.start();
+        mStatus = PlayerOperation.STATUS_PLAYED;
     }
 
     /**
@@ -110,6 +117,7 @@ public class MediaManager {
      */
     public void pause(){
         mMediaPlayer.pause();
+        mStatus = PlayerOperation.STATUS_PAUSED;
     }
 
     /**
@@ -117,6 +125,7 @@ public class MediaManager {
      */
     public void resume(){
         mMediaPlayer.start();
+        mStatus = PlayerOperation.STATUS_PLAYED;
     }
 
     /**
@@ -124,9 +133,17 @@ public class MediaManager {
      */
     public void stop(){
         mMediaPlayer.stop();
-        mMediaPlayer.reset();
+        mStatus = PlayerOperation.STATUS_STOPPED;
+        reset();
     }
 
+    /**
+     * 重置MediaPlayer
+     */
+    public void reset() {
+        initMediaPlayer();
+        mStatus = PlayerOperation.STATUS_IDLE;
+    }
     /**
      * 详见MediaPlayer.getDuration()（live内容特殊对待）
      * @return
@@ -160,11 +177,26 @@ public class MediaManager {
     }
 
     /**
+     * 判断是否正在缓冲
+     */
+    public boolean isBuffering() {
+        return mMediaPlayer.isBuffering();
+    }
+
+    /**
      * 获得已经缓冲的进度
      * @return
      */
     public int getBufferPercentage(){
         return mMediaPlayer.getBufferProgress();
+    }
+
+    public boolean isPrepared() {
+        boolean _prepared = false;
+        if (mMediaPlayer != null && (mStatus == PlayerOperation.STATUS_PLAYED || mStatus == PlayerOperation.STATUS_PAUSED || mStatus == PlayerOperation.STATUS_PREPARED)) {
+            _prepared = true;
+        }
+        return _prepared;
     }
 
 }

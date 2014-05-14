@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import com.rmj.mediaplayer.core.constant.PlayerOperation;
+import com.rmj.mediaplayer.core.log.Log;
 import com.rmj.mediaplayer.core.manager.MediaManager;
 import io.vov.vitamio.MediaPlayer;
 
@@ -23,7 +24,8 @@ public class MediaService extends Service{
     @Override
     public void onCreate() {
         super.onCreate();
-        MediaManager.getInstance().initMediaPlayer(new MediaPlayer(getApplicationContext()));
+        MediaManager.getInstance().setContext(getApplicationContext());
+        MediaManager.getInstance().initMediaPlayer();
         initHandler();
     }
 
@@ -41,41 +43,42 @@ public class MediaService extends Service{
             @Override
             public void handleMessage(Message msg) {
                 switch (msg.what) {
-                    case PlayerOperation.OPERATION_START:
-                        MediaManager.getInstance().prepare();
-                        break;
-                    case PlayerOperation.OPERATION_PAUSE:
-                        MediaManager.getInstance().pause();
-                        mClientHandler.obtainMessage(PlayerOperation.STATUS_PAUSED).sendToTarget();
-                        break;
-                    case PlayerOperation.OPERATION_RESUME:
-                        MediaManager.getInstance().resume();
-                        mClientHandler.obtainMessage(PlayerOperation.STATUS_PLAYED).sendToTarget();
+                    //TODO 整合play、pause、stop和resume的操作
+                    case PlayerOperation.OPERATION_PLAY_PAUSE:
+                        if (MediaManager.getInstance().isPrepared()) {
+                            if (MediaManager.getInstance().isPlaying()) {
+                                pause();
+                            } else {
+                                play();
+                            }
+                        } else {
+                            prepare();
+                        }
                         break;
                     case PlayerOperation.OPERATION_STOP:
-                        MediaManager.getInstance().stop();
-                        mClientHandler.obtainMessage(PlayerOperation.STATUS_STOPED).sendToTarget();
+                        stop();
                         break;
-                    case PlayerOperation.OPERATION_SEEKTO:
+                    case PlayerOperation.OPERATION_SEEK_TO:
                         int _pos = msg.arg1;
-                        MediaManager.getInstance().seekTo(_pos);
+                        seekTo(_pos);
                         break;
                     case PlayerOperation.STATUS_PREPARED:
-                        MediaManager.getInstance().resume();
-                        //通知界面部分
+                        play();
                         mClientHandler.obtainMessage(PlayerOperation.STATUS_PREPARED).sendToTarget();
                         break;
-                    case PlayerOperation.STATUS_BUFFERRING_START:
-                        mClientHandler.obtainMessage(PlayerOperation.STATUS_BUFFERRING_START).sendToTarget();
+                    case PlayerOperation.STATUS_BUFFERING_START:
+                        mClientHandler.obtainMessage(PlayerOperation.STATUS_BUFFERING_START).sendToTarget();
+                        Log.i("Sunshine","Buffering start");
                         break;
-                    case PlayerOperation.STATUS_BUFFERRING_END:
-                        mClientHandler.obtainMessage(PlayerOperation.STATUS_BUFFERRING_END).sendToTarget();
+                    case PlayerOperation.STATUS_BUFFERING_END:
+                        mClientHandler.obtainMessage(PlayerOperation.STATUS_BUFFERING_END).sendToTarget();
+                        Log.i("Sunshine","Buffering end");
                         break;
                     case PlayerOperation.STATUS_ERROR:
-                        mClientHandler.obtainMessage(PlayerOperation.STATUS_ERROR).sendToTarget();
+                        error();
                         break;
                     case PlayerOperation.STATUS_IDLE:
-                        mClientHandler.obtainMessage(PlayerOperation.STATUS_IDLE).sendToTarget();
+                        idle();
                         break;
                     case PlayerOperation.OPERATION_STOP_SERVICE:
                         stopSelf();
@@ -85,5 +88,36 @@ public class MediaService extends Service{
                 }
             }
         };
+    }
+    void play() {
+        MediaManager.getInstance().resume();
+        mClientHandler.obtainMessage(PlayerOperation.STATUS_PLAYED).sendToTarget();
+    }
+
+    void pause() {
+        MediaManager.getInstance().pause();
+        mClientHandler.obtainMessage(PlayerOperation.STATUS_PAUSED).sendToTarget();
+    }
+
+    void stop() {
+        MediaManager.getInstance().stop();
+        mClientHandler.obtainMessage(PlayerOperation.STATUS_STOPPED).sendToTarget();
+    }
+
+    void seekTo(int pos) {
+        MediaManager.getInstance().seekTo(pos);
+    }
+
+    void prepare() {
+        MediaManager.getInstance().prepare();
+    }
+
+    void error() {
+        MediaManager.getInstance().reset();
+        mClientHandler.obtainMessage(PlayerOperation.STATUS_ERROR).sendToTarget();
+    }
+
+    void idle() {
+        mClientHandler.obtainMessage(PlayerOperation.STATUS_IDLE).sendToTarget();
     }
 }

@@ -16,7 +16,7 @@ public class PlayerControl implements MediaControlPanel.MediaPlayerControl {
 
     @Override
     public void start() {
-        Message _msg = MediaService.mHandler.obtainMessage(PlayerOperation.OPERATION_START);
+        Message _msg = MediaService.mHandler.obtainMessage(PlayerOperation.OPERATION_PLAY_PAUSE);
         _msg.sendToTarget();
     }
 
@@ -50,7 +50,7 @@ public class PlayerControl implements MediaControlPanel.MediaPlayerControl {
 
     @Override
     public void seekTo(int pos) {
-        Message _msg = MediaService.mHandler.obtainMessage(PlayerOperation.OPERATION_START);
+        Message _msg = MediaService.mHandler.obtainMessage(PlayerOperation.OPERATION_PLAY_PAUSE);
         _msg.sendToTarget();
     }
 

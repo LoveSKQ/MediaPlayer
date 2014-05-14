@@ -12,8 +12,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import com.rmj.mediaplayer.core.constant.PlayerOperation;
 import com.rmj.mediaplayer.core.service.MediaService;
-import com.rmj.mediaplayer.core.util.StringUtils;
-import org.w3c.dom.Text;
 
 /**
  * 界面部分只提供功能，界面布局、显示效果都由layout文件控制，重写initControllerView()方法自行定制
@@ -22,8 +20,7 @@ import org.w3c.dom.Text;
 public abstract class MediaControlPanel extends FrameLayout{
     protected Handler mHandler;//接收后台事件响应结果，相应改变界面
     protected ImageButton mPlayPauseButton;//播放&暂停按钮
-    protected ImageButton mNextButton;//下一个按钮
-    protected ImageButton mPrevButton;//上一个按钮
+    protected TextView mPlayPauseTextView;
     protected SeekBar mSeekBar;//播放进度条
     protected TextView mCurrentTime;
     protected TextView mTotalTime;
@@ -37,16 +34,26 @@ public abstract class MediaControlPanel extends FrameLayout{
     public MediaControlPanel(Context context) {
         super(context);
         mContext = context;
+        init();
     }
 
     public MediaControlPanel(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
+        init();
     }
 
     public MediaControlPanel(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mContext = context;
+        init();
+    }
+
+    public void init() {
+        initListeners();
+        initPanelView();
+        initHandler();
+        mSeekBar.setEnabled(false);
     }
 
     /**
@@ -62,7 +69,7 @@ public abstract class MediaControlPanel extends FrameLayout{
     /**
      * 初始化Controller界面
      */
-    public void initPanelView(){}
+    public abstract void initPanelView();
 
     /**
      * 初始化接收事件响应的handler
@@ -78,16 +85,16 @@ public abstract class MediaControlPanel extends FrameLayout{
                     case PlayerOperation.STATUS_PAUSED:
                         paused();
                         break;
-                    case PlayerOperation.STATUS_STOPED:
-                        stoped();
+                    case PlayerOperation.STATUS_STOPPED:
+                        stopped();
                         break;
                     case PlayerOperation.STATUS_PREPARED:
                         prepared();
                         break;
-                    case PlayerOperation.STATUS_BUFFERRING_START:
+                    case PlayerOperation.STATUS_BUFFERING_START:
                         bufferingStart();
                         break;
-                    case PlayerOperation.STATUS_BUFFERRING_END:
+                    case PlayerOperation.STATUS_BUFFERING_END:
                         bufferingEnd();
                         break;
                     case PlayerOperation.STATUS_ERROR:
@@ -101,6 +108,7 @@ public abstract class MediaControlPanel extends FrameLayout{
                 }
             }
         };
+        MediaService.mClientHandler = mHandler;
     }
 
     /**
@@ -110,7 +118,7 @@ public abstract class MediaControlPanel extends FrameLayout{
         mPlayPauseListener = new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Message _msg = MediaService.mHandler.obtainMessage(PlayerOperation.OPERATION_START);
+                Message _msg = MediaService.mHandler.obtainMessage(PlayerOperation.OPERATION_PLAY_PAUSE);
                 _msg.sendToTarget();
                 waiting();
             }
@@ -134,6 +142,7 @@ public abstract class MediaControlPanel extends FrameLayout{
                 //TODO 拖动结束
             }
         };
+        initExtraListeners();
     }
 
     /**
@@ -142,7 +151,7 @@ public abstract class MediaControlPanel extends FrameLayout{
     public abstract void initExtraListeners();
     protected abstract void played();
     protected abstract void paused();
-    protected abstract void stoped();
+    protected abstract void stopped();
     protected abstract void waiting();
     protected abstract void prepared();
     protected abstract void bufferingStart();
