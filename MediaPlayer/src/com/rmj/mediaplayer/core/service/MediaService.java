@@ -43,7 +43,7 @@ public class MediaService extends Service{
             @Override
             public void handleMessage(Message msg) {
                 switch (msg.what) {
-                    //TODO 整合play、pause、stop和resume的操作
+                    //TODO 整合play、pause和resume的操作
                     case PlayerOperation.OPERATION_PLAY_PAUSE:
                         if (MediaManager.getInstance().isPrepared()) {
                             if (MediaManager.getInstance().isPlaying()) {
