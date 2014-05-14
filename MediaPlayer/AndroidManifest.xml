@@ -9,13 +9,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <application android:label="@string/media_module_name" android:icon="@drawable/ic_launcher">
-        <activity android:name=".demo.activity.MyActivity"
-                  android:label="@string/media_module_name">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
         <activity
                 android:name="io.vov.vitamio.activity.InitActivity"
                 android:configChanges="orientation|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation"
