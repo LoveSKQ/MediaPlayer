@@ -62,11 +62,11 @@ public class MediaManager {
             @Override
             public boolean onInfo(MediaPlayer mp, int what, int extra) {
                 if (what == MediaPlayer.MEDIA_INFO_BUFFERING_START) {
-                    //开始缓冲执行的操作
+                    //TODO 开始缓冲执行的操作
                     MediaService.mHandler.obtainMessage(PlayerOperation.STATUS_BUFFERING_START).sendToTarget();
                 }
                 else if (what == MediaPlayer.MEDIA_INFO_BUFFERING_END) {
-                    //缓冲结束后执行的操作
+                    //TODO 缓冲结束后执行的操作
                     MediaService.mHandler.obtainMessage(PlayerOperation.STATUS_BUFFERING_END).sendToTarget();
                 }
                 return true;
@@ -81,7 +81,7 @@ public class MediaManager {
         mMediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
             @Override
             public boolean onError(MediaPlayer mp, int what, int extra) {
-                //播放放生错误，界面操作
+                //TODO 播放放生错误，界面操作
                 MediaService.mHandler.obtainMessage(PlayerOperation.STATUS_ERROR);
                 return true;
             }

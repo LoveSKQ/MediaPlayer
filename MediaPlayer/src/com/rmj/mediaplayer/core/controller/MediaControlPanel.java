@@ -18,10 +18,10 @@ import com.rmj.mediaplayer.core.service.MediaService;
  * Created by G11 on 2014/5/6.
  */
 public abstract class MediaControlPanel extends FrameLayout{
-    protected Handler mHandler;//接收后台事件响应结果，相应改变界面
-    protected ImageButton mPlayPauseButton;//播放&暂停按钮
+    protected Handler mHandler;//TODO 接收后台事件响应结果，相应改变界面
+    protected ImageButton mPlayPauseButton;//TODO 播放&暂停按钮
     protected TextView mPlayPauseTextView;
-    protected SeekBar mSeekBar;//播放进度条
+    protected SeekBar mSeekBar;//TODO 播放进度条
     protected TextView mCurrentTime;
     protected TextView mTotalTime;
     protected Context mContext;
@@ -61,7 +61,7 @@ public abstract class MediaControlPanel extends FrameLayout{
      * @param layout Panel的布局文件
      */
     public void setPanelView(int layout) {
-        //判断layout是否有效
+        //TODO 判断layout是否有效
         mPanelView = ((LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(layout,null);
         this.addView(mPanelView);
     }
@@ -177,14 +177,14 @@ public abstract class MediaControlPanel extends FrameLayout{
      * 控制执行接口，负责执行控制操作（区分开界面控制和后台控制逻辑）
      */
     public interface MediaPlayerControl {
-        void    start();//开始播放，与stop对应，需要建立连接
-        void    pause();//暂停播放，与resume对应
-        void    resume();//恢复播放，与pause对应
-        void    stop();//停止播放，与play对应，释放连接资源
-        int     getDuration();//详见MediaPlayer.getDuration()（live内容特殊对待）
-        int     getCurrentPosition();//获得当前播放位置
-        void    seekTo(int pos);//跳转到位置pos
-        boolean isPlaying();//判断是否正在播放
-        int     getBufferPercentage();//获得已经缓冲的进度
+        void    start();//TODO 开始播放，与stop对应，需要建立连接
+        void    pause();//TODO 暂停播放，与resume对应
+        void    resume();//TODO 恢复播放，与pause对应
+        void    stop();//TODO 停止播放，与play对应，释放连接资源
+        int     getDuration();//TODO 详见MediaPlayer.getDuration()（live内容特殊对待）
+        int     getCurrentPosition();//TODO 获得当前播放位置
+        void    seekTo(int pos);//TODO 跳转到位置pos
+        boolean isPlaying();//TODO 判断是否正在播放
+        int     getBufferPercentage();//TODO 获得已经缓冲的进度
     }
 }
